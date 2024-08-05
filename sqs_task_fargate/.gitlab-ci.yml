@@ -1,0 +1,63 @@
+stages:
+  - test
+  - upload
+
+include:
+  - remote: 'https://gitlab.com/gitlab-com/gl-infra/common-ci-tasks/-/raw/v1.78.1/tflint.yml'
+  - remote: 'https://gitlab.com/gitlab-com/gl-infra/common-ci-tasks/-/raw/v1.78.1/.gitlab-ci-asdf-versions.yml'
+  - template: Security/Secret-Detection.gitlab-ci.yml
+  - project: 'platformengineering/tf-module-ci'
+    ref: main
+    file: '.gitlab-ci.yml'
+
+variables:
+  GL_ASDF_TFLINT_VERSION: $TFLINT_VERSION
+  GL_ASDF_TERRAFORM_VERSION: $TERRAFORM_VERSION
+
+image:
+  name: hashicorp/terraform:1.8 # make sure change the terraform version everywhere if you change it
+  entrypoint:
+    - '/usr/bin/env'
+    - 'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
+secret_detection:
+  stage: test
+  needs: [ ]
+
+upload-module:
+  stage: upload
+  before_script:
+    - echo "uploading module to infrastructure registry"
+
+terraform_check:
+  stage: test
+  needs: [ ]
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      when: always
+    - if: $CI_COMMIT_TAG
+      when: always
+    - when: on_success
+      allow_failure: false
+  script:
+    - terraform fmt -check -recursive .
+
+tflint:
+  stage: test
+  before_script:
+    - echo -e "credentials \"git.oxolo.com\" {\n  token = \"$CI_JOB_TOKEN\"\n}" > /root/.terraformrc
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+      when: never
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      when: always
+    - if: $CI_COMMIT_TAG
+      when: always
+    - when: on_success
+      allow_failure: false

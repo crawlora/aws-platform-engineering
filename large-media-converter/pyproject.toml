@@ -1,0 +1,56 @@
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+# line-length = 88  # change also here if you alter default black line length
+
+[tool.pytest]
+minversion = "6.0"
+addopts = "-ra -q"
+testpaths = "tests"
+
+[tool.docformatter]
+args = ["--wrap-summaries=88", "--wrap-descriptions=88"]
+
+[tool.poetry]
+name = "large-media-converter"
+version = "0.1.0"
+description = ""
+authors = ["Oliver Borchers <o.borchers@oxolo.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pydantic = "<2"
+urllib3 = "<2"
+sentry-sdk = "^1.37.0"
+pytest = "^7.4.3"
+pytest-cov = "^4.1.0"
+isort = "^5.12.0"
+moto = "^4.2.9"
+poethepoet = "^0.24.4"
+pylint = "^3.0.2"
+pylint-exit = "^1.2.0"
+anybadge = "^1.14.0"
+docformatter = "^1.7.5"
+black = "22.12.0"
+tenacity = "^8.2.3"
+pillow = "^10.2.0"
+cryptography = "<39"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+
+[tool.poe.tasks]
+format = "poetry run black lambdas/ tests/"
+sortimports = "poetry run isort --profile black lambdas/ tests/"
+tests = "poetry run pytest --log-cli-level=INFO -v --cov-fail-under=70 --cov=lambdas --cov-report=term-missing --cov-report html:tests/coverage --junit-xml=tests/report.xml tests"
+linting = "poetry run pylint lambdas/"
+docformatter = "poetry run docformatter --blank -i -r lambdas/ tests/"
+fmt = ["sortimports", "format", "docformatter"]
+precommit = ["tests", "sortimports", "format", "docformatter", "linting"]

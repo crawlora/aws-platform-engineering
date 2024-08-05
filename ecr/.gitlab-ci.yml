@@ -1,0 +1,8 @@
+include:
+  - project: 'platformengineering/tf-module-ci'
+    ref: main
+    file: '.gitlab-ci.yml'
+upload-module:
+  # you can overwrite/modify the template here
+  before_script:
+    - echo "uploading module to infrastructure registry"

@@ -1,0 +1,191 @@
+{
+    "ResponseMetadata": {
+      "RequestId": "cf070195-3abb-49e2-9396-f5464f7fc374",
+      "HTTPStatusCode": 200,
+      "HTTPHeaders": {
+        "date": "Thu, 08 Feb 2024 07:57:10 GMT",
+        "content-type": "application/json",
+        "content-length": "3446",
+        "connection": "keep-alive",
+        "x-amzn-requestid": "cf070195-3abb-49e2-9396-f5464f7fc374",
+        "x-amz-apigw-id": "SzplnGCqDoEEipQ=",
+        "x-amzn-trace-id": "Root=1-65c48956-27ad0f0e0299c43919b7a736"
+      },
+      "RetryAttempts": 0
+    },
+    "Job": {
+      "AccelerationSettings": {
+        "Mode": "PREFERRED"
+      },
+      "AccelerationStatus": "NOT_ACCELERATED",
+      "Arn": "arn:aws:mediaconvert:eu-west-1:575448432945:jobs/1707326694584-noi2mn",
+      "BillingTagsSource": "JOB",
+      "ClientRequestToken": "711f1b67-19f3-4cef-a47f-e71c01c3407d",
+      "CreatedAt": "2024-02-07 18:24:54+01:00",
+      "Id": "1707326694584-noi2mn",
+      "Messages": {
+        "Info": [
+          "This job doesn't require enough processing power to benefit from accelerated transcoding."
+        ],
+        "Warning": []
+      },
+      "OutputGroupDetails": [
+        {
+          "OutputDetails": [
+            {
+              "DurationInMs": 46120,
+              "VideoDetails": {
+                "HeightInPx": 1014,
+                "WidthInPx": 1800
+              }
+            }
+          ]
+        }
+      ],
+      "Priority": 0,
+      "Queue": "arn:aws:mediaconvert:eu-west-1:575448432945:queues/Default",
+      "Role": "arn:aws:iam::575448432945:role/dev-lmc-mediaconvert-role",
+      "Settings": {
+        "AdAvailOffset": 0,
+        "Inputs": [
+          {
+            "AudioSelectors": {
+              "Audio Selector 1": {
+                "DefaultSelection": "DEFAULT",
+                "SelectorType": "PID"
+              }
+            },
+            "DeblockFilter": "DISABLED",
+            "DenoiseFilter": "DISABLED",
+            "FileInput": "s3://dev-lmc-media-input-bucket/fix/Oxolo-test-2024-02-06.mp4",
+            "FilterEnable": "AUTO",
+            "FilterStrength": 0,
+            "PsiControl": "USE_PSI",
+            "TimecodeSource": "ZEROBASED",
+            "VideoSelector": {
+              "ColorSpace": "FOLLOW"
+            }
+          }
+        ],
+        "OutputGroups": [
+          {
+            "CustomName": "mp4",
+            "Name": "File Group",
+            "OutputGroupSettings": {
+              "FileGroupSettings": {
+                "Destination": "s3://oxolo-backend-mediasync-development/fix/"
+              },
+              "Type": "FILE_GROUP_SETTINGS"
+            },
+            "Outputs": [
+              {
+                "AudioDescriptions": [
+                  {
+                    "AudioTypeControl": "FOLLOW_INPUT",
+                    "CodecSettings": {
+                      "AacSettings": {
+                        "AudioDescriptionBroadcasterMix": "NORMAL",
+                        "Bitrate": 128000,
+                        "CodecProfile": "LC",
+                        "CodingMode": "CODING_MODE_2_0",
+                        "RateControlMode": "CBR",
+                        "RawFormat": "NONE",
+                        "SampleRate": 48000,
+                        "Specification": "MPEG4"
+                      },
+                      "Codec": "AAC"
+                    },
+                    "LanguageCodeControl": "FOLLOW_INPUT"
+                  }
+                ],
+                "ContainerSettings": {
+                  "Container": "MP4",
+                  "Mp4Settings": {
+                    "CslgAtom": "INCLUDE",
+                    "FreeSpaceBox": "EXCLUDE",
+                    "MoovPlacement": "PROGRESSIVE_DOWNLOAD"
+                  }
+                },
+                "VideoDescription": {
+                  "AfdSignaling": "NONE",
+                  "AntiAlias": "ENABLED",
+                  "CodecSettings": {
+                    "Codec": "H_264",
+                    "H264Settings": {
+                      "AdaptiveQuantization": "HIGH",
+                      "Bitrate": 1500000,
+                      "CodecLevel": "LEVEL_5_2",
+                      "CodecProfile": "HIGH",
+                      "EntropyEncoding": "CABAC",
+                      "FieldEncoding": "PAFF",
+                      "FlickerAdaptiveQuantization": "DISABLED",
+                      "FramerateControl": "SPECIFIED",
+                      "FramerateConversionAlgorithm": "DUPLICATE_DROP",
+                      "FramerateDenominator": 1,
+                      "FramerateNumerator": 25,
+                      "GopBReference": "DISABLED",
+                      "GopClosedCadence": 1,
+                      "GopSize": 48.0,
+                      "GopSizeUnits": "FRAMES",
+                      "HrdBufferInitialFillPercentage": 90,
+                      "HrdBufferSize": 3000000,
+                      "InterlaceMode": "PROGRESSIVE",
+                      "MinIInterval": 0,
+                      "NumberBFramesBetweenReferenceFrames": 3,
+                      "NumberReferenceFrames": 3,
+                      "ParControl": "INITIALIZE_FROM_SOURCE",
+                      "QualityTuningLevel": "SINGLE_PASS_HQ",
+                      "RateControlMode": "CBR",
+                      "RepeatPps": "DISABLED",
+                      "SceneChangeDetect": "ENABLED",
+                      "Slices": 1,
+                      "SlowPal": "DISABLED",
+                      "Softness": 0,
+                      "SpatialAdaptiveQuantization": "ENABLED",
+                      "Syntax": "DEFAULT",
+                      "Telecine": "NONE",
+                      "TemporalAdaptiveQuantization": "ENABLED",
+                      "UnregisteredSeiTimecode": "DISABLED"
+                    }
+                  },
+                  "ColorMetadata": "INSERT",
+                  "DropFrameTimecode": "ENABLED",
+                  "RespondToAfd": "NONE",
+                  "ScalingBehavior": "DEFAULT",
+                  "Sharpness": 50,
+                  "TimecodeInsertion": "DISABLED",
+                  "Width": 1800
+                }
+              }
+            ]
+          }
+        ],
+        "TimecodeConfig": {
+          "Source": "ZEROBASED"
+        }
+      },
+      "Status": "COMPLETE",
+      "StatusUpdateInterval": "SECONDS_60",
+      "Timing": {
+        "FinishTime": "2024-02-07 18:25:12+01:00",
+        "StartTime": "2024-02-07 18:24:55+01:00",
+        "SubmitTime": "2024-02-07 18:24:54+01:00"
+      },
+      "UserMetadata": {
+        "guid": "0738e5a9-6fb3-42f1-b0d4-7e29f9e1a3d2",
+        "source_name": "fix/Oxolo-test-2024-02-06.mp4",
+        "width": "1920",
+        "height": "1080",
+        "format": "mov,mp4,m4a,3gp,3g2,mj2",
+        "duration": "46.120000",
+        "size": "20308332",
+        "bit_rate": "3522694"
+      },
+      "Warnings": [
+        {
+          "Code": 230001,
+          "Count": 1
+        }
+      ]
+    }
+  }

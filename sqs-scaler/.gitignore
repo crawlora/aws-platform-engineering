@@ -1,0 +1,21 @@
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+
+# Vscode
+*.code-workspace
+.vscode
+
+# Terraform
+.terraform
+.terraform.lock.hcl
+terraform.tfstate
+
+# Files (zip)
+*.7z
+*.zip

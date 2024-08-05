@@ -1,0 +1,143 @@
+{
+    "Queue": "arn:aws:mediaconvert:eu-west-1:509069223821:queues/Default",
+    "UserMetadata": {
+      "guid": "3a50030c-7407-4bc5-bffb-111778a6fdfb",
+      "source_name": "Meteora Graphic.mp4",
+      "width": "768",
+      "height": "768",
+      "format": "mov,mp4,m4a,3gp,3g2,mj2",
+      "duration": "46.000000",
+      "size": "36937854",
+      "bit_rate": "6423974"
+    },
+    "Role": "arn:aws:iam::509069223821:role/dev-lmu-mediaconvert-role",
+    "Settings": {
+      "TimecodeConfig": {
+        "Source": "ZEROBASED"
+      },
+      "OutputGroups": [
+        {
+          "CustomName": "mp4",
+          "Name": "File Group",
+          "Outputs": [
+            {
+              "ContainerSettings": {
+                "Container": "MP4",
+                "Mp4Settings": {
+                  "CslgAtom": "INCLUDE",
+                  "FreeSpaceBox": "EXCLUDE",
+                  "MoovPlacement": "PROGRESSIVE_DOWNLOAD"
+                }
+              },
+              "VideoDescription": {
+                "ScalingBehavior": "DEFAULT",
+                "TimecodeInsertion": "DISABLED",
+                "AntiAlias": "ENABLED",
+                "Sharpness": 50,
+                "CodecSettings": {
+                  "Codec": "H_264",
+                  "H264Settings": {
+                    "InterlaceMode": "PROGRESSIVE",
+                    "NumberReferenceFrames": 3,
+                    "Syntax": "DEFAULT",
+                    "Softness": 0,
+                    "FramerateDenominator": 1,
+                    "GopClosedCadence": 1,
+                    "HrdBufferInitialFillPercentage": 90,
+                    "GopSize": 48,
+                    "Slices": 1,
+                    "GopBReference": "DISABLED",
+                    "HrdBufferSize": 3000000,
+                    "SlowPal": "DISABLED",
+                    "SpatialAdaptiveQuantization": "ENABLED",
+                    "TemporalAdaptiveQuantization": "ENABLED",
+                    "FlickerAdaptiveQuantization": "DISABLED",
+                    "EntropyEncoding": "CABAC",
+                    "Bitrate": 1500000,
+                    "FramerateControl": "SPECIFIED",
+                    "RateControlMode": "CBR",
+                    "CodecProfile": "HIGH",
+                    "Telecine": "NONE",
+                    "FramerateNumerator": 25,
+                    "MinIInterval": 0,
+                    "AdaptiveQuantization": "HIGH",
+                    "CodecLevel": "LEVEL_4_1",
+                    "FieldEncoding": "PAFF",
+                    "SceneChangeDetect": "ENABLED",
+                    "QualityTuningLevel": "SINGLE_PASS_HQ",
+                    "FramerateConversionAlgorithm": "DUPLICATE_DROP",
+                    "UnregisteredSeiTimecode": "DISABLED",
+                    "GopSizeUnits": "FRAMES",
+                    "ParControl": "INITIALIZE_FROM_SOURCE",
+                    "NumberBFramesBetweenReferenceFrames": 3,
+                    "RepeatPps": "DISABLED"
+                  }
+                },
+                "AfdSignaling": "NONE",
+                "DropFrameTimecode": "ENABLED",
+                "RespondToAfd": "NONE",
+                "ColorMetadata": "INSERT"
+              },
+              "AudioDescriptions": [
+                {
+                  "AudioTypeControl": "FOLLOW_INPUT",
+                  "CodecSettings": {
+                    "Codec": "AAC",
+                    "AacSettings": {
+                      "AudioDescriptionBroadcasterMix": "NORMAL",
+                      "Bitrate": 128000,
+                      "RateControlMode": "CBR",
+                      "CodecProfile": "LC",
+                      "CodingMode": "CODING_MODE_2_0",
+                      "RawFormat": "NONE",
+                      "SampleRate": 48000,
+                      "Specification": "MPEG4"
+                    }
+                  },
+                  "LanguageCodeControl": "FOLLOW_INPUT"
+                }
+              ]
+            }
+          ],
+          "OutputGroupSettings": {
+            "Type": "FILE_GROUP_SETTINGS",
+            "FileGroupSettings": {
+              "Destination": "s3://dev-lmu-media-output-bucket/"
+            }
+          }
+        }
+      ],
+      "AdAvailOffset": 0,
+      "Inputs": [
+        {
+          "AudioSelectors": {
+            "Audio Selector 1": {
+              "Tracks": [
+                1
+              ],
+              "Offset": 0,
+              "DefaultSelection": "DEFAULT",
+              "SelectorType": "TRACK",
+              "ProgramSelection": 1
+            }
+          },
+          "VideoSelector": {
+            "ColorSpace": "FOLLOW"
+          },
+          "FilterEnable": "AUTO",
+          "PsiControl": "USE_PSI",
+          "FilterStrength": 0,
+          "DeblockFilter": "DISABLED",
+          "DenoiseFilter": "DISABLED",
+          "TimecodeSource": "ZEROBASED",
+          "FileInput": "s3://dev-lmu-media-input-bucket/Meteora Graphic.mp4"
+        }
+      ]
+    },
+    "BillingTagsSource": "JOB",
+    "AccelerationSettings": {
+      "Mode": "PREFERRED"
+    },
+    "StatusUpdateInterval": "SECONDS_60",
+    "Priority": 0
+  }

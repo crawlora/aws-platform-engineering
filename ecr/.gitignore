@@ -1,0 +1,9 @@
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+.terraformrc
+terraform.rc
+.terraform.lock.hcl
+.terraform/

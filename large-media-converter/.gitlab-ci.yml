@@ -1,0 +1,132 @@
+include:
+  - project: 'platformengineering/tf-module-ci'
+    ref: main
+    file: '.gitlab-ci.yml'
+
+
+variables:
+  PYTHON_VERS: "3.8.8"
+  DOCKER_TLS_CERTDIR: "/certs"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+stages:
+  - build
+  - test
+  - deploy
+
+build-image:
+  stage: build
+  image: docker:24-cli
+  allow_failure: false
+  before_script:
+    - docker info # this line will be run to be sure that you have access to docker daemon within a container
+    - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - echo "gitlab-ci-token" > user.txt
+    - echo $CI_JOB_TOKEN > token.txt
+  script:
+    - cat user.txt
+    - cat token.txt
+    - >
+      DOCKER_BUILDKIT=1 docker build
+      --secret id=GITLAB_USER,src=user.txt
+      --secret id=GITLAB_TOKEN,src=token.txt
+      --build-arg GITLAB_USER=gitlab-ci-token
+      --build-arg GITLAB_TOKEN=$CI_JOB_TOKEN
+      --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+      .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  tags:
+    - DOCKER
+
+black:
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  dependencies: [ ]
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  needs:
+    - build-image
+  allow_failure: false
+  script:
+    - cd /app
+    - poetry run black --check .
+
+isort:
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  dependencies: [ ]
+  allow_failure: false
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  needs:
+    - build-image
+  script:
+    - cd /app
+    - poetry run isort . --check-only
+
+pylint:
+  stage: test
+  allow_failure: false
+  variables:
+    GIT_STRATEGY: none
+  dependencies: [ ]
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  needs:
+    - build-image
+  before_script:
+    - pip install pylint-exit anybadge
+  script:
+    - cd /app
+    - mkdir ./pylint
+    - ls -la
+    - poetry run pylint --load-plugins pylint_pydantic --extension-pkg-whitelist='pydantic' --output-format=text lambdas | tee ./pylint/pylint.log || pylint-exit $?
+  after_script:
+    - PYLINT_SCORE=$(sed -n 's/^Your code has been rated at \([-0-9.]*\)\/.*/\1/p' /app/pylint/pylint.log)
+    - anybadge --label=Pylint --file=/app/pylint/pylint.svg --value=$PYLINT_SCORE 2=red 4=orange 8=yellow 10=green
+    - echo "Pylint score is $PYLINT_SCORE"
+    - mv /app/pylint $CI_PROJECT_DIR/pylint
+  artifacts:
+    paths:
+      - pylint/
+
+docformatter:
+  stage: test
+  variables:
+    GIT_STRATEGY: none
+  dependencies: [ ]
+  allow_failure: false
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  needs:
+    - build-image
+  script:
+    - cd /app
+    - poetry run docformatter --check --blank -r .
+
+pytest:
+  variables:
+    GIT_STRATEGY: none
+  dependencies: []
+  stage: test
+  image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  needs:
+    - build-image
+  script:
+    - cd /app
+    - poetry run pytest -v --cov-fail-under=70 --cov=lambdas --cov-report=term --cov-report html:tests/coverage --junit-xml=tests/report.xml tests
+  after_script:
+    - mv /app/tests $CI_PROJECT_DIR/tests
+  artifacts:
+    when: always
+    paths:
+      - "tests/coverage"
+    reports:
+      junit: tests/report.xml
+  coverage: '/^TOTAL.+?(\d+\%)$/'
+
+
+upload-module:
+  stage: deploy
+  needs:
+    - pytest
+  before_script:
+    - echo "uploading module to infrastructure registry"

@@ -1,0 +1,6 @@
+pydantic<2
+sentry-sdk
+urllib3<2
+tenacity
+Pillow
+cryptography<39
