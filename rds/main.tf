@@ -100,6 +100,7 @@ resource "aws_db_instance" "rds" {
   tags                         = local.tags
   storage_encrypted            = var.config.storage_encrypted
   ca_cert_identifier           = var.config.ca_cert_identifier
+  publicly_accessible          = var.config.publicly_accessible
   lifecycle {
     ignore_changes = [
 
