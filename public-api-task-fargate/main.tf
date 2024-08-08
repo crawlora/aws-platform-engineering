@@ -81,7 +81,7 @@ resource "aws_iam_role_policy" "ecs_task_execution_policy" {
 
 
 module "cloudwatch_logger" {
-  source  = "git.oxolo.com/platformengineering/cloudwatch/aws"
+  source  = " git::https://github.com/dataminer-site/aws-platform-engineering.git//cloudwatch?ref=main"
   version = "0.0.1"
   config = {
     environment       = var.environment
