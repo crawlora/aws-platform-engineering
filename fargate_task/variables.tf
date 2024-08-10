@@ -14,7 +14,7 @@ variable "config" {
     context = string
     aws_region = string
     ecs_cluster_id = string
-    container_health_check = map(object)
+    container_health_check = map(string)
     private_subnet_ids = list(string)
     security_group_ids = list(string)
   })
