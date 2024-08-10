@@ -85,7 +85,7 @@ resource "aws_iam_role_policy" "ecs_task_execution_policy" {
 module "cloudwatch_logger" {
   # source = "git.oxolo.com/platformengineering/cloudwatch/aws"
   # version = "0.0.1"
-  source = "./cloudwatch"
+  source = "../cloudwatch"
   config = {
     environment       = var.config.environment
     context           = var.config.context
