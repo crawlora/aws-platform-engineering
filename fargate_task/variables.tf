@@ -11,7 +11,6 @@ variable "config" {
     command = list(string)
     desired_count = number
     tags = map(string)
-    context = string
     aws_region = string
     ecs_cluster_id = string
     container_health_check = map(string)
