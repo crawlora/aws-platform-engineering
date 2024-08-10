@@ -1,11 +1,21 @@
 resource "aws_ecr_repository" "repository" {
-  name                 = var.name
+  name                 = var.config.name
   image_tag_mutability = "IMMUTABLE"
   image_scanning_configuration {
     scan_on_push = false
   }
-  tags = var.tags
+  tags = var.config.tags
 }
+
+
+# resource "aws_ecr_repository" "repository" {
+#   name                 = var.name
+#   image_tag_mutability = "IMMUTABLE"
+#   image_scanning_configuration {
+#     scan_on_push = false
+#   }
+#   tags = var.tags
+# }
 
 resource "aws_ecr_lifecycle_policy" "ecr_life_cycle_policy" {
   repository = aws_ecr_repository.repository.name
