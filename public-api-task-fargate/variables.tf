@@ -86,10 +86,10 @@ variable "ecs_cluster_name" {
   description = "The name of the ECS cluster to deploy the task to"
 }
 
-variable "efs_id" {
-  type        = string
-  description = "The ID of the EFS file system"
-}
+# variable "efs_id" {
+#   type        = string
+#   description = "The ID of the EFS file system"
+# }
 
 # variable "efs_name" {
 #   type        = string
