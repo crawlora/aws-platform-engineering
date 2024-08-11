@@ -114,7 +114,7 @@ resource "aws_ecs_task_definition" "ecs_task" {
   # }
   container_definitions = jsonencode([{
     name        = "${local.name}-service"
-    image       = var.image
+    image       = var.config.image
     essential   = true
     environment = local.environment_variables
     command     = var.config.command
