@@ -1,23 +1,23 @@
 locals {
-  name = "${var.environment}-${var.task_name}"
+  name = "${var.config.environment}-${var.config.task_name}"
   environment_variables = [
-    for k, v in var.environment_vars : {
+    for k, v in var.config.environment_vars : {
       name  = k
       value = v
     }
   ]
   tags = merge({
     Name = local.name
-  }, var.tags)
+  }, var.config.tags)
 
   secrets = [
-    for k, v in var.secret_vars : {
+    for k, v in var.config.secret_vars : {
       name      = k
       valueFrom = v
     }
   ]
   secret_arns = [
-  for k, v in var.secret_vars : v]
+  for k, v in var.config.secret_vars : v]
 
   has_secrets = length(local.secret_arns) > 0
 }
@@ -83,11 +83,12 @@ resource "aws_iam_role_policy" "ecs_task_execution_policy" {
 
 
 module "cloudwatch_logger" {
-  source = "git.oxolo.com/platformengineering/cloudwatch/aws"
-  version = "0.0.1"
+  # source = "git.oxolo.com/platformengineering/cloudwatch/aws"
+  # version = "0.0.1"
+  source = "../cloudwatch"
   config = {
-    environment       = var.environment
-    context           = var.context
+    environment       = var.config.environment
+    context           = var.config.context
     name              = "${local.name}-cloudwatch-logger"
     retention_in_days = 14
   }
@@ -99,64 +100,64 @@ resource "aws_ecs_task_definition" "ecs_task" {
   family                   = "${local.name}-task"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = var.cpu
-  memory                   = var.memory
+  cpu                      = var.config.cpu
+  memory                   = var.config.memory
   task_role_arn            = aws_iam_role.ecs_task_role.arn
   execution_role_arn       = aws_iam_role.ecs_task_role.arn
-  volume {
-    name = var.efs_name
+  # volume {
+  #   name = var.efs_name
 
-    efs_volume_configuration {
-      file_system_id = var.efs_id
-      root_directory = "/"
-    }
-  }
+  #   efs_volume_configuration {
+  #     file_system_id = var.efs_id
+  #     root_directory = "/"
+  #   }
+  # }
   container_definitions = jsonencode([{
     name        = "${local.name}-service"
-    image       = var.image
+    image       = var.config.image
     essential   = true
     environment = local.environment_variables
-    command     = var.command
+    command     = var.config.command
     stopTimeout = 120 # max value
-    healthCheck = var.container_health_check
-    resourceRequirements = var.gpu == 0 ? [] : [
-      {
-        type  = "GPU"
-        value = "1"
-      }
-    ]
+    healthCheck = var.config.container_health_check
+    # resourceRequirements = var.gpu == 0 ? [] : [
+    #   {
+    #     type  = "GPU"
+    #     value = "1"
+    #   }
+    # ]
     logConfiguration = {
       logDriver = "awslogs"
       options = {
         awslogs-group         = module.cloudwatch_logger.log_group_name
         awslogs-stream-prefix = "ecs"
-        awslogs-region        = var.aws_region
+        awslogs-region        = var.config.aws_region
       }
     }
-    mountPoints = [
-      {
-        sourceVolume  = var.efs_name
-        containerPath = "/shared"
-        readOnly      = false
-      }
-    ]
-    secrets = local.secrets
+    # mountPoints = [
+    #   {
+    #     sourceVolume  = var.efs_name
+    #     containerPath = "/shared"
+    #     readOnly      = false
+    #   }
+    # ]
+    # secrets = local.secrets
   }])
   tags = local.tags
 }
 
 resource "aws_ecs_service" "ecs_service" {
   name                  = "${local.name}-service"
-  cluster               = var.ecs_cluster_id
+  cluster               = var.config.ecs_cluster_id
   task_definition       = "${aws_ecs_task_definition.ecs_task.family}:${max(aws_ecs_task_definition.ecs_task.revision, 0)}"
   launch_type           = "FARGATE"
   wait_for_steady_state = true
 
   network_configuration {
-    subnets         = var.private_subnet_ids
-    security_groups = var.security_group_ids
+    subnets         = var.config.private_subnet_ids
+    security_groups = var.config.security_group_ids
   }
-  desired_count                      = var.desired_count
+  desired_count                      = var.config.desired_count
   deployment_minimum_healthy_percent = 50
   deployment_maximum_percent         = 200
   enable_ecs_managed_tags            = true

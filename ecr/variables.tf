@@ -1,6 +1,13 @@
-variable "name" {
-  type = string
+variable "config" {
+  type = object({
+    name = string
+    tags   = map(string)
+  })
 }
-variable "tags" {
-  type = map(string)
-}
+
+# variable "name" {
+#   type = string
+# }
+# variable "tags" {
+#   type = map(string)
+# }
