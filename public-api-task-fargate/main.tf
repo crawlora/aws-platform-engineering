@@ -102,13 +102,15 @@ resource "aws_ecs_task_definition" "ecs_task" {
   memory             = var.memory
   task_role_arn      = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.ecs_task_role.arn
-  volume {
-    name = var.efs_name
-    efs_volume_configuration {
-      file_system_id = var.efs_id
-      root_directory = "/"
-    }
-  }
+
+  # volume {
+  #   name = var.efs_name
+  #   efs_volume_configuration {
+  #     file_system_id = var.efs_id
+  #     root_directory = "/"
+  #   }
+  # }
+  
   container_definitions = jsonencode([{
     name         = "${local.name}-api-service"
     image        = var.image
@@ -136,13 +138,13 @@ resource "aws_ecs_task_definition" "ecs_task" {
         awslogs-region        = var.aws_region
       }
     }
-    mountPoints = [
-      {
-        sourceVolume  = var.efs_name
-        containerPath = "/shared"
-        readOnly      = false
-      }
-    ]
+    # mountPoints = [
+    #   {
+    #     sourceVolume  = var.efs_name
+    #     containerPath = "/shared"
+    #     readOnly      = false
+    #   }
+    # ]
     ulimits = [{
       name      = "nofile"
       softLimit = 65535

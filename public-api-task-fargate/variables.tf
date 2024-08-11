@@ -91,10 +91,10 @@ variable "efs_id" {
   description = "The ID of the EFS file system"
 }
 
-variable "efs_name" {
-  type        = string
-  description = "The name of the EFS file system"
-}
+# variable "efs_name" {
+#   type        = string
+#   description = "The name of the EFS file system"
+# }
 
 variable "container_port" {
   description = "The port number on which the containers are listening"
