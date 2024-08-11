@@ -103,13 +103,6 @@ resource "aws_ecs_task_definition" "ecs_task" {
   task_role_arn      = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.ecs_task_role.arn
 
-  # volume {
-  #   name = var.efs_name
-  #   efs_volume_configuration {
-  #     file_system_id = var.efs_id
-  #     root_directory = "/"
-  #   }
-  # }
   
   container_definitions = jsonencode([{
     name         = "${local.name}-api-service"

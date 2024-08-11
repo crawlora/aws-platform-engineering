@@ -86,15 +86,6 @@ variable "ecs_cluster_name" {
   description = "The name of the ECS cluster to deploy the task to"
 }
 
-# variable "efs_id" {
-#   type        = string
-#   description = "The ID of the EFS file system"
-# }
-
-# variable "efs_name" {
-#   type        = string
-#   description = "The name of the EFS file system"
-# }
 
 variable "container_port" {
   description = "The port number on which the containers are listening"
