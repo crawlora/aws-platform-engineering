@@ -23,6 +23,3 @@ output "target_group_arn_suffix" {
   value = aws_lb_target_group.target_group.arn_suffix
 }
 
-output "host_name" {
-  value = aws_route53_record.api_oxolo_public.name
-}
