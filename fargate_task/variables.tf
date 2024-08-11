@@ -13,7 +13,7 @@ variable "config" {
     tags = map(string)
     aws_region = string
     ecs_cluster_id = string
-    container_health_check = map(string)
+    container_health_check = optional(map(string), null)
     private_subnet_ids = list(string)
     security_group_ids = list(string)
   })
