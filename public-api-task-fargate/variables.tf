@@ -232,10 +232,7 @@ variable "security_group_ids" {
   description = "Security group IDs for the ECS task"
 }
 
-variable "certificate_arn" {
-  type        = string
-  description = "The ARN of the certificate to use for the listener"
-}
+
 variable "slack_endpoint" {
   description = "Slack endpoint for alerts"
   type        = string

@@ -38,20 +38,6 @@ resource "aws_lb" "load_balancer" {
   tags                       = local.tags
 }
 
-resource "aws_lb_listener" "load_balancer" {
-  load_balancer_arn = aws_lb.load_balancer.arn
-  port              = 443
-  protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
-  tags              = local.tags
-  certificate_arn   = var.certificate_arn
-
-  default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.target_group.arn
-  }
-}
-
 resource "aws_lb_target_group" "target_group" {
   name     = "${local.name}-api-tg"
   port     = var.container_port
