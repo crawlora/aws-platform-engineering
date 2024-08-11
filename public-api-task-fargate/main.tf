@@ -61,6 +61,7 @@ resource "aws_iam_role_policy" "ecs_task_execution_policy" {
           "ecs:*",
           "elasticfilesystem:*",
           "elasticache:*",
+          "ssm:*"
         ]
         Resource = "*"
       }
@@ -81,7 +82,7 @@ resource "aws_iam_role_policy" "ecs_task_execution_policy" {
 
 
 module "cloudwatch_logger" {
-  source  = "../cloudwatch"
+  source = "../cloudwatch"
   config = {
     environment       = var.environment
     context           = var.context
@@ -103,7 +104,7 @@ resource "aws_ecs_task_definition" "ecs_task" {
   task_role_arn      = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.ecs_task_role.arn
 
-  
+
   container_definitions = jsonencode([{
     name         = "${local.name}-api-service"
     image        = var.image

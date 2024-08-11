@@ -86,6 +86,10 @@ variable "ecs_cluster_name" {
   description = "The name of the ECS cluster to deploy the task to"
 }
 
+variable "certificate_arn" {
+  type        = string
+  description = "The ARN of the certificate to use for the listener"
+}
 
 variable "container_port" {
   description = "The port number on which the containers are listening"
