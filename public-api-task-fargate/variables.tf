@@ -137,10 +137,6 @@ variable "private_subnet_ids" {
   type        = list(string)
 }
 
-# variable "zone_id" {
-#   description = "The ID of the Route53 zone in which the DNS record will be created"
-#   type        = string
-# }
 
 # Autoscaling
 
@@ -235,11 +231,6 @@ variable "security_group_ids" {
   type        = list(string)
   description = "Security group IDs for the ECS task"
 }
-
-# variable "whole_url_without_http" {
-#   type        = string
-#   description = "The url of the api without http like backend.development.oxolo.com"
-# }
 
 variable "certificate_arn" {
   type        = string

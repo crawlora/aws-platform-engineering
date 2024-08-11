@@ -75,17 +75,6 @@ resource "aws_lb_target_group" "target_group" {
   }
 }
 
-# resource "aws_route53_record" "api_oxolo_public" {
-#   zone_id = var.zone_id
-#   name    = var.whole_url_without_http
-#   type    = "A"
-
-#   alias {
-#     name                   = aws_lb.load_balancer.dns_name
-#     zone_id                = aws_lb.load_balancer.zone_id
-#     evaluate_target_health = true
-#   }
-# }
 ############################## Monitoring ########################################
 
 resource "aws_sns_topic" "public_api_task_fargate_topic" {
