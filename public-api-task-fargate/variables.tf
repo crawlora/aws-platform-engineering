@@ -8,6 +8,12 @@ variable "task_name" {
   description = "The name of the task"
 }
 
+variable "should_wait_untill_complete" {
+  type = bool
+  default = false
+  description = "terraform will check if the task in started or not"
+}
+
 variable "image" {
   type        = string
   description = "The image to run in the container"

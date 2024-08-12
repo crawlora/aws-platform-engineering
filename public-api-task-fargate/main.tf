@@ -159,7 +159,7 @@ resource "aws_ecs_service" "ecs_service" {
   task_definition        = "${aws_ecs_task_definition.ecs_task.family}:${max(aws_ecs_task_definition.ecs_task.revision, 0)}"
   launch_type            = "FARGATE"
   enable_execute_command = true
-  wait_for_steady_state  = true
+  wait_for_steady_state  = should_wait_untill_complete
 
   network_configuration {
     subnets         = var.private_subnet_ids
