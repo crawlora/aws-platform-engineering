@@ -82,9 +82,13 @@ resource "aws_appautoscaling_policy" "requests-auto-scaling" {
             metric_name = "RequestCountPerTarget"
             namespace   = "AWS/ApplicationELB"
 
-            dimensions {
-              name  = "TargetGroup"
-              value = aws_lb_target_group.target_group.arn_suffix
+
+            dynamic "dimensions" {
+              for_each = var.enable_lb ? [1] : []
+              content {
+                name  = "TargetGroup"
+                value = aws_lb_target_group.target_group[0].arn_suffix
+              }
             }
           }
 

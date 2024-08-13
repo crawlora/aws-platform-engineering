@@ -179,11 +179,16 @@ resource "aws_ecs_service" "ecs_service" {
     rollback = true
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.target_group.arn
-    container_name   = local.container_name
-    container_port   = var.container_port
+
+  dynamic "load_balancer" {
+    for_each = var.enable_lb ? [1] : []
+    content {
+          target_group_arn = aws_lb_target_group.target_group[0].arn
+          container_name   = local.container_name
+          container_port   = var.container_port
+    }
   }
+
 
   lifecycle {
     create_before_destroy = true

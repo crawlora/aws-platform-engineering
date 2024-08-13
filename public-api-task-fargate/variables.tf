@@ -247,3 +247,16 @@ variable "slack_endpoint" {
   description = "Slack endpoint for alerts"
   type        = string
 }
+
+
+variable "enable_lb" {
+  description = "should we enable loadbalancer"
+  type = bool
+  default = true
+}
+
+variable "is_internal_load_balancer" {
+  type = bool
+  description = "is internal loadbalancer"
+  default = false
+}
