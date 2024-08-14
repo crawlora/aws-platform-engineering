@@ -22,3 +22,8 @@ output "target_group_arn" {
 output "target_group_arn_suffix" {
   value = aws_lb_target_group.target_group.*.arn_suffix
 }
+
+
+output "lb" {
+  value = aws_lb.load_balancer
+}
