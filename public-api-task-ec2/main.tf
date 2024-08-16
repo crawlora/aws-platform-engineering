@@ -40,10 +40,6 @@ resource "aws_iam_role_policy_attachment" "ecs_tasks_execution_role" {
 resource "aws_iam_role" "ecs_task_role" {
   name               = "${local.name}-ecs-task-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_role_data.json
-
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-  ]
 }
 
 resource "aws_iam_role_policy" "ecs_task_execution_policy" {
@@ -65,8 +61,7 @@ resource "aws_iam_role_policy" "ecs_task_execution_policy" {
           "ecs:*",
           "elasticfilesystem:*",
           "elasticache:*",
-          "ssm:*",
-          "secretsmanager:GetSecretValue"
+          "ssm:*"
         ]
         Resource = "*"
       }
@@ -85,30 +80,20 @@ resource "aws_iam_role_policy" "ecs_task_execution_policy" {
   })
 }
 
-
-module "cloudwatch_logger" {
-  source = "../cloudwatch"
-  config = {
-    environment       = var.environment
-    context           = var.context
-    name              = "${local.name}-cloudwatch-logger"
-    retention_in_days = 14
-  }
-}
-
 resource "aws_ecs_task_definition" "ecs_task" {
   family                   = "${local.name}-api-task"
   network_mode             = "awsvpc"
-  requires_compatibilities = ["FARGATE"]
+  requires_compatibilities = ["EC2"]
+
   runtime_platform {
     operating_system_family = "LINUX"
     cpu_architecture        = "X86_64"
   }
+  
   cpu                = var.cpu
   memory             = var.memory
   task_role_arn      = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.ecs_task_role.arn
-
 
   container_definitions = jsonencode([{
     name         = "${local.name}-api-service"
@@ -162,14 +147,13 @@ resource "aws_ecs_service" "ecs_service" {
   name                   = "${local.name}-api-service"
   cluster                = var.ecs_cluster_id
   task_definition        = "${aws_ecs_task_definition.ecs_task.family}:${max(aws_ecs_task_definition.ecs_task.revision, 0)}"
-  launch_type            = "FARGATE"
+  # launch_type            = "EC2"
   enable_execute_command = true
   wait_for_steady_state  = var.should_wait_untill_complete
 
   network_configuration {
-    subnets          = var.private_subnet_ids
-    security_groups  = var.security_group_ids
-    assign_public_ip = false
+    subnets         = var.private_subnet_ids
+    security_groups = var.security_group_ids
   }
 
   desired_count                      = var.desired_count
@@ -177,9 +161,8 @@ resource "aws_ecs_service" "ecs_service" {
   deployment_maximum_percent         = 200
   enable_ecs_managed_tags            = true
 
-  force_new_deployment = true
-
-  health_check_grace_period_seconds = var.enable_lb ? 30 : 0
+  force_new_deployment              = true
+  health_check_grace_period_seconds = 30
 
   deployment_circuit_breaker {
     enable   = true
@@ -190,12 +173,23 @@ resource "aws_ecs_service" "ecs_service" {
   dynamic "load_balancer" {
     for_each = var.enable_lb ? [1] : []
     content {
-      target_group_arn = aws_lb_target_group.target_group[0].arn
-      container_name   = local.container_name
-      container_port   = var.container_port
+          target_group_arn = aws_lb_target_group.target_group[0].arn
+          container_name   = local.container_name
+          container_port   = var.container_port
     }
   }
 
+  ordered_placement_strategy {
+    type  = "spread"
+    field = "attribute:ecs.availability-zone"
+  }
+
+
+  capacity_provider_strategy {
+    capacity_provider = aws_ecs_capacity_provider.main.name
+    base              = 1
+    weight            = 100
+  }
 
   lifecycle {
     create_before_destroy = true
