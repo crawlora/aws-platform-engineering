@@ -1,8 +1,3 @@
-provider "aws" {
-  region = "ap-south-1"
-}
-
-
 # an example instance in the private subnet
 resource "aws_instance" "private_instance" {
   ami                    = data.aws_ami.amazon_linux_2.id

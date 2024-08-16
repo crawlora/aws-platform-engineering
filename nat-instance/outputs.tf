@@ -19,7 +19,6 @@ output "iam_role_name" {
   value       = aws_iam_role.this.name
 }
 
-
 output "security_group_id" {
   description = "Vpc security group id"
   value = aws_security_group.this.id
