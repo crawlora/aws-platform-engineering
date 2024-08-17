@@ -260,3 +260,10 @@ variable "is_internal_load_balancer" {
   description = "is internal loadbalancer"
   default = false
 }
+
+
+variable "ecs_service_connect_namespace_arn" {
+  type = string
+  default = ""
+  description = "if you are using service connect please specify the arn"
+}

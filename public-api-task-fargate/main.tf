@@ -119,10 +119,14 @@ resource "aws_ecs_task_definition" "ecs_task" {
     stopTimeout  = 120 # max value
     healthCheck  = var.container_health_check
     dockerLabels = var.docker_labels != null ? var.docker_labels : null
-    portMappings = [{
-      protocol      = "tcp"
-      containerPort = var.container_port
-    }]
+    portMappings = [
+      {
+        protocol      = "tcp"
+        containerPort = var.container_port,
+        appProtocol = "http",
+        name = "${local.name}-api-service-port"
+      }
+    ]
     resourceRequirements = var.gpu == 0 ? [] : [
       {
         type  = "GPU"
@@ -214,6 +218,23 @@ resource "aws_ecs_service" "ecs_service" {
       registry_arn   = var.service_registry_arn
       container_port = var.container_port
       container_name = local.container_name
+    }
+  }
+
+
+  dynamic "service_connect_configuration" {
+    for_each = length(var.ecs_service_connect_namespace_arn) > 0 ? [1] : []
+    content {
+      enabled   = true
+      namespace = var.ecs_service_connect_namespace_arn
+      service {
+        discovery_name = local.container_name
+        port_name      = "${local.name}-api-service-port"
+        client_alias {
+          dns_name = local.container_name
+          port     = var.container_port
+        }
+      }
     }
   }
 }
