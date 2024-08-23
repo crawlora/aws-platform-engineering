@@ -19,7 +19,7 @@ resource "aws_vpc" "vpc" {
 }
 
 # Subnet
-## Internet Gateway for public subnet
+#Internet Gateway for public subnet
 resource "aws_internet_gateway" "ig" {
   vpc_id = aws_vpc.vpc.id
 
@@ -27,20 +27,20 @@ resource "aws_internet_gateway" "ig" {
 }
 
 ## Elastic IP for NAT
-resource "aws_eip" "nat_eip" {
-  domain = "vpc"
-  depends_on = [
-    aws_internet_gateway.ig
-  ]
-}
+# resource "aws_eip" "nat_eip" {
+#   domain = "vpc"
+#   depends_on = [
+#     aws_internet_gateway.ig
+#   ]
+# }
 
 ## NAT
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat_eip.id
-  subnet_id     = element(aws_subnet.public_subnet.*.id, 0)
-  depends_on    = [aws_internet_gateway.ig]
-  tags          = local.tags
-}
+# resource "aws_nat_gateway" "nat" {
+#   allocation_id = aws_eip.nat_eip.id
+#   subnet_id     = element(aws_subnet.public_subnet.*.id, 0)
+#   depends_on    = [aws_internet_gateway.ig]
+#   tags          = local.tags
+# }
 
 ## Public Subnet
 resource "aws_subnet" "public_subnet" {
@@ -84,12 +84,12 @@ resource "aws_route" "public_internet_gateway" {
   gateway_id             = aws_internet_gateway.ig.id
 }
 
-## Private Internet Gateway
-resource "aws_route" "private_nat_gateway" {
-  route_table_id         = aws_route_table.private.id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat.id
-}
+# Private Internet Gateway
+# resource "aws_route" "private_nat_gateway" {
+#   route_table_id         = aws_route_table.private.id
+#   destination_cidr_block = "0.0.0.0/0"
+#   nat_gateway_id         = aws_nat_gateway.nat.id
+# }
 
 # table associations
 resource "aws_route_table_association" "public" {

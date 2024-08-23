@@ -15,3 +15,7 @@ output "instance_id" {
   value       = aws_instance.instance.id
   description = "The instance ID of the EC2 instance"
 }
+
+output "iam_role" {
+  value = aws_iam_role.ecs_instance_role.name
+}

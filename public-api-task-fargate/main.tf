@@ -123,8 +123,8 @@ resource "aws_ecs_task_definition" "ecs_task" {
       {
         protocol      = "tcp"
         containerPort = var.container_port,
-        appProtocol = "http",
-        name = "${local.name}-api-service-port"
+        appProtocol   = "http",
+        name          = "${local.name}-api-service-port"
       }
     ]
     resourceRequirements = var.gpu == 0 ? [] : [
@@ -173,7 +173,7 @@ resource "aws_ecs_service" "ecs_service" {
   network_configuration {
     subnets          = var.private_subnet_ids
     security_groups  = var.security_group_ids
-    assign_public_ip = false
+    assign_public_ip = true
   }
 
   desired_count                      = var.desired_count
