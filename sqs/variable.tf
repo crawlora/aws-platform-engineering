@@ -9,7 +9,7 @@ variable "maxRetry" {
   description = "number of retries it will have befor moving to sqs"
 }
 
-variable "project_name" {
+variable "projectName" {
   type        = string
   description = "name of the project"
 }

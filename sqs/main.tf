@@ -1,7 +1,7 @@
 
 locals {
   maxRetry = var.maxRetry
-  appName = "${var.project_name}-${var.app}-${var.environment}"
+  appName = "${var.projectName}-${var.app}-${var.environment}"
 }
 
 resource "aws_sqs_queue" "q" {
@@ -9,14 +9,14 @@ resource "aws_sqs_queue" "q" {
   visibility_timeout_seconds = var.lambda_time_out
 
   redrive_policy = jsonencode({
-    deadLetterTargetArn = aws_sqs_queue.terraform_queue_deadletter_in.arn
+    deadLetterTargetArn = aws_sqs_queue.dlq.arn
     maxReceiveCount     = local.maxRetry
   })
 
   tags = {
-    Name        = "${var.project_name}-${var.environment}"
+    Name        = "${var.projectName}-${var.environment}"
     Environment = "${var.environment}"
-    Project     = var.project_name
+    Project     = var.projectName
     App         = var.app
     Role        = "sqs"
   }
@@ -31,7 +31,7 @@ resource "aws_sqs_queue" "dlq" {
   tags = {
     Name        = "${local.appName}"
     Environment = "${var.environment}"
-    Project     = var.project_name
+    Project     = var.projectName
     App         = var.app
     Role        = "sqs"
     IS_DLQ      = "true"
