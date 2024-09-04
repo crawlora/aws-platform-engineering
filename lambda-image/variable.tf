@@ -65,3 +65,16 @@ variable "enable_xray" {
   type        = bool
   description = "should it use xrzy to trace the messages"
 }
+
+variable "batch_size" {
+  default     = 10
+  type        = number
+  description = "number of messages should be processed by lambda from sqs queue"
+}
+
+
+variable "maximum_concurrency" {
+  default     = 2
+  type        = number
+  description = "scaling config to maximum process messages in the queue"
+}

@@ -138,6 +138,11 @@ resource "aws_iam_role_policy_attachment" "sqs_access_policy" {
 resource "aws_lambda_event_source_mapping" "maps" {
   count            = length(var.sqs_arns)
   event_source_arn = element(var.sqs_arns, count.index)
+  batch_size       = var.batch_size
   function_name    = aws_lambda_function.application.arn
+
+  scaling_config {
+    maximum_concurrency = var.maximum_concurrency
+  }
 }
 
