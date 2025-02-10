@@ -40,11 +40,18 @@ resource "aws_iam_role_policy_attachment" "ecs_tasks_execution_role" {
 resource "aws_iam_role" "ecs_task_role" {
   name               = "${local.name}-ecs-task-role"
   assume_role_policy = data.aws_iam_policy_document.ecs_task_role_data.json
-
-  managed_policy_arns = [
-    "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-  ]
 }
+
+# resource "aws_iam_role" "ecs_task_role" {
+#   name               = "${local.name}-ecs-task-role"
+#   assume_role_policy = data.aws_iam_policy_document.ecs_task_role_data.json
+
+#   managed_policy_arns = [
+#     "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+#   ]
+# }
+
+
 
 resource "aws_iam_role_policy" "ecs_task_execution_policy" {
   name = "${local.name}-ecs-task-execution-policy"
@@ -64,9 +71,7 @@ resource "aws_iam_role_policy" "ecs_task_execution_policy" {
           "sqs:*",
           "ecs:*",
           "elasticfilesystem:*",
-          "elasticache:*",
-          "ssm:*",
-          "secretsmanager:GetSecretValue"
+          "elasticache:*"
         ]
         Resource = "*"
       }
@@ -76,7 +81,8 @@ resource "aws_iam_role_policy" "ecs_task_execution_policy" {
           Effect = "Allow"
           Action = [
             "ssm:GetParameters",
-            "secretsmanager:GetSecretValue"
+            "secretsmanager:GetSecretValue",
+            "kms:Decrypt"
           ]
           Resource = var.secret_arns
         }
