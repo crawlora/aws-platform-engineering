@@ -71,11 +71,11 @@ resource "aws_lb_listener" "load_balancer" {
   count = var.enable_lb ? 1 : 0
 
   load_balancer_arn = aws_lb.load_balancer[count.index].arn
-  port              = 80
-  protocol          = "HTTP"
-  # ssl_policy        = "ELBSecurityPolicy-2016-08"
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
   tags              = local.tags
-  # certificate_arn   = var.certificate_arn
+  certificate_arn   = var.certificate_arn
 
   default_action {
     type             = "forward"
