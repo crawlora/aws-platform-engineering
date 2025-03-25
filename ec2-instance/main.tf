@@ -99,6 +99,11 @@ resource "aws_instance" "instance" {
   iam_instance_profile        = var.config.iam_instance_profile_name != "" ? var.config.iam_instance_profile_name : aws_iam_instance_profile.ecs_iam_profile.name
 
 
+  # Prevent T3 Unlimited Mode (disable bursting)
+  credit_specification {
+    cpu_credits = "standard"
+  }
+
   root_block_device {
     volume_size = var.config.volume_size
     encrypted   = true
