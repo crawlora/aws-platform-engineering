@@ -8,6 +8,13 @@ variable "task_name" {
   description = "The name of the task"
 }
 
+
+variable "lb_idle_timeout" {
+  type = number
+  default = 60
+  description = "Time in seconds that the connection is allowed to be idle. Only valid for Load Balancers of type application. Default: 60."
+}
+
 variable "should_wait_untill_complete" {
   type = bool
   default = false

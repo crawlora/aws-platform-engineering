@@ -36,10 +36,16 @@ resource "aws_lb" "load_balancer" {
   security_groups    = [module.sg_load_balancer.security_group_id]
   subnets            = [var.public_subnet_ids[0], var.public_subnet_ids[1]]
 
+  idle_timeout = var.lb_idle_timeout
+
   enable_deletion_protection = false
   enable_http2               = true
   tags                       = local.tags
+
+
 }
+
+
 
 resource "aws_lb_target_group" "target_group" {
   count = var.enable_lb ? 1 : 0
