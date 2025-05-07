@@ -101,7 +101,7 @@ resource "aws_instance" "instance" {
 
   # Prevent T3 Unlimited Mode (disable bursting)
   credit_specification {
-    cpu_credits = "standard"
+    cpu_credits = var.config.cpu_credits
   }
 
   root_block_device {
