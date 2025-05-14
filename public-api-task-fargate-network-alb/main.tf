@@ -17,7 +17,11 @@ locals {
     Name = local.name
   }, var.tags)
 
-  efs_enabled = try(length(var.efs_name) > 0 && length(var.efs_id) > 0, false)
+  efs_enabled = try(
+    var.efs_id != null && var.efs_id != "" &&
+    (var.efs_name == null || try(length(var.efs_name) > 0, true)),
+    false
+  )
 }
 
 
@@ -37,6 +41,12 @@ data "aws_iam_policy_document" "ecs_task_role_data" {
 resource "aws_iam_role_policy_attachment" "ecs_tasks_execution_role" {
   role       = aws_iam_role.ecs_task_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+}
+
+
+resource "aws_iam_role_policy_attachment" "ecs_task_efs" {
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonElasticFileSystemClientFullAccess"
 }
 
 resource "aws_iam_role" "ecs_task_role" {
@@ -126,29 +136,35 @@ resource "aws_ecs_task_definition" "ecs_task" {
       name = var.efs_name
       efs_volume_configuration {
         file_system_id = var.efs_id
-        root_directory = "/"
+        root_directory = var.root_directory
+        transit_encryption = var.transit_encryption
+
+        authorization_config {
+          access_point_id = var.efs_access_point_id
+          iam             = var.iam_authorization
+        }
       }
     }
   }
 
   container_definitions = jsonencode([{
-    
-    name         = "${local.name}-api-service"
-    
-    image        = var.image
-    
-    essential    = true
-    
-    environment  = local.environment_variables
-    
-    command      = var.command
-    
-    stopTimeout  = 120 # max value
-    
-    healthCheck  = var.container_health_check
+
+    name = "${local.name}-api-service"
+
+    image = var.image
+
+    essential = true
+
+    environment = local.environment_variables
+
+    command = var.command
+
+    stopTimeout = 120 # max value
+
+    healthCheck = var.container_health_check
 
     dockerLabels = var.docker_labels != null ? var.docker_labels : null
-    
+
     portMappings = [
       {
         protocol      = "tcp"
@@ -156,7 +172,7 @@ resource "aws_ecs_task_definition" "ecs_task" {
         name          = "${local.name}-api-service-port"
       }
     ]
-    
+
     resourceRequirements = var.gpu == 0 ? [] : [
       {
         type  = "GPU"
@@ -172,14 +188,14 @@ resource "aws_ecs_task_definition" "ecs_task" {
         awslogs-region        = var.aws_region
       }
     }
-    
+
     mountPoints = local.efs_enabled ? [
-        {
-          sourceVolume  = var.efs_name
-          containerPath = var.efs_mount_container_path
-          readOnly      = false
-        }
-      ] : []
+      {
+        sourceVolume  = var.efs_name,
+        containerPath = var.mount_container_path
+        readOnly      = var.read_only
+      }
+    ] : []
 
     ulimits = [{
       name      = "nofile"
@@ -187,13 +203,13 @@ resource "aws_ecs_task_definition" "ecs_task" {
       hardLimit = 65535
       }
     ]
-  
+
     secrets = local.secrets
-  
+
   }])
-  
+
   tags = local.tags
-  
+
   depends_on = [
     aws_iam_role.ecs_task_role
   ]
