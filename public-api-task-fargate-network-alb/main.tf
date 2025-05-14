@@ -16,6 +16,8 @@ locals {
   tags = merge({
     Name = local.name
   }, var.tags)
+
+  efs_enabled = try(length(var.efs_name) > 0 && length(var.efs_id) > 0, false)
 }
 
 
@@ -119,7 +121,7 @@ resource "aws_ecs_task_definition" "ecs_task" {
 
 
   dynamic "volume" {
-    for_each = var.efs_id != null && var.efs_name != null ? [1] : []
+    for_each = local.efs_enabled ? [1] : []
     content {
       name = var.efs_name
       efs_volume_configuration {
@@ -171,13 +173,13 @@ resource "aws_ecs_task_definition" "ecs_task" {
       }
     }
     
-    mountPoints = var.efs_name ? [
-      {
-        sourceVolume  = var.efs_name
-        containerPath = var.efs_mount_container_path
-        readOnly      = false
-      }
-    ] : []
+    mountPoints = local.efs_enabled ? [
+        {
+          sourceVolume  = var.efs_name
+          containerPath = var.efs_mount_container_path
+          readOnly      = false
+        }
+      ] : []
 
     ulimits = [{
       name      = "nofile"
