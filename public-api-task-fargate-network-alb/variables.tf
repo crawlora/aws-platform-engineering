@@ -261,3 +261,27 @@ variable "ecs_service_connect_namespace_arn" {
   default = ""
   description = "if you are using service connect please specify the arn"
 }
+
+variable "efs_name" {
+  type        = string
+  default     = null
+  description = "The name of the EFS volume (optional)"
+}
+
+variable "efs_id" {
+  type        = string
+  default     = null
+  description = "The ID of an existing EFS volume (optional)"
+}
+
+variable "efs_mount_container_path" {
+  type        = string
+  default     = "/"
+  description = "The container path where EFS should be mounted (defaults to '/')"
+
+
+  validation {
+    condition     = can(regex("^/", var.efs_mount_container_path))
+    error_message = "The mount path must start with '/'."
+  }
+}

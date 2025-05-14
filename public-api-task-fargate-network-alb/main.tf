@@ -102,6 +102,8 @@ module "cloudwatch_logger" {
   }
 }
 
+
+
 resource "aws_ecs_task_definition" "ecs_task" {
   family                   = "${local.name}-api-task"
   network_mode             = "awsvpc"
@@ -116,15 +118,35 @@ resource "aws_ecs_task_definition" "ecs_task" {
   execution_role_arn = aws_iam_role.ecs_task_role.arn
 
 
+  dynamic "volume" {
+    for_each = var.efs_id != null && var.efs_name != null ? [1] : []
+    content {
+      name = var.efs_name
+      efs_volume_configuration {
+        file_system_id = var.efs_id
+        root_directory = var.efs_mount_container_path
+      }
+    }
+  }
+
   container_definitions = jsonencode([{
+    
     name         = "${local.name}-api-service"
+    
     image        = var.image
+    
     essential    = true
+    
     environment  = local.environment_variables
+    
     command      = var.command
+    
     stopTimeout  = 120 # max value
+    
     healthCheck  = var.container_health_check
+
     dockerLabels = var.docker_labels != null ? var.docker_labels : null
+    
     portMappings = [
       {
         protocol      = "tcp"
@@ -132,12 +154,14 @@ resource "aws_ecs_task_definition" "ecs_task" {
         name          = "${local.name}-api-service-port"
       }
     ]
+    
     resourceRequirements = var.gpu == 0 ? [] : [
       {
         type  = "GPU"
         value = "1"
       }
     ]
+
     logConfiguration = {
       logDriver = "awslogs"
       options = {
@@ -146,25 +170,32 @@ resource "aws_ecs_task_definition" "ecs_task" {
         awslogs-region        = var.aws_region
       }
     }
-    # mountPoints = [
-    #   {
-    #     sourceVolume  = var.efs_name
-    #     containerPath = "/shared"
-    #     readOnly      = false
-    #   }
-    # ]
+    
+    mountPoints = var.efs_name ? [
+      {
+        sourceVolume  = var.efs_name
+        containerPath = var.efs_mount_container_path
+        readOnly      = false
+      }
+    ] : []
+
     ulimits = [{
       name      = "nofile"
       softLimit = 65535
       hardLimit = 65535
       }
     ]
+  
     secrets = local.secrets
+  
   }])
+  
   tags = local.tags
+  
   depends_on = [
     aws_iam_role.ecs_task_role
   ]
+
 }
 
 resource "aws_ecs_service" "ecs_service" {
