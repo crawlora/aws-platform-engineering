@@ -126,7 +126,7 @@ resource "aws_ecs_task_definition" "ecs_task" {
       name = var.efs_name
       efs_volume_configuration {
         file_system_id = var.efs_id
-        root_directory = var.efs_mount_container_path
+        root_directory = "/"
       }
     }
   }
