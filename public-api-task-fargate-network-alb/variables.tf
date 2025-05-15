@@ -265,6 +265,7 @@ variable "ecs_service_connect_namespace_arn" {
 variable "efs_id" {
   type        = string
   description = "The ID of the EFS filesystem (required)"
+  default = ""
 }
 
 variable "efs_name" {
@@ -276,6 +277,7 @@ variable "efs_name" {
 variable "efs_access_point_id" {
   type        = string
   description = "The ID of the EFS access point (required)"
+  default = ""
 }
 
 variable "mount_container_path" {
