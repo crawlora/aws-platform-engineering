@@ -5,6 +5,7 @@ locals {
   ami_id        = var.config.instance_ami_id
   subnet_id     = var.config.subnet_id
   instance_type = var.config.instance_type
+  monitoring = var.config.monitoring
   ingress_rules = var.config.create_ssh ? concat([{
     description = "Allow SSH access"
     from_port   = 22
@@ -98,6 +99,7 @@ resource "aws_instance" "instance" {
   key_name                    = var.config.aws_key_name
   iam_instance_profile        = var.config.iam_instance_profile_name != "" ? var.config.iam_instance_profile_name : aws_iam_instance_profile.ecs_iam_profile.name
 
+  monitoring = local.monitoring
 
   # Prevent T3 Unlimited Mode (disable bursting)
   credit_specification {
