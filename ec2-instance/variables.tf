@@ -17,6 +17,8 @@ variable "config" {
     create_ssh            = optional(bool, false)
     allow_all_traffic_out = optional(bool, false)
 
+    monitoring = optional(bool, false)
+
     cpu_credits = optional(string, "standard")
 
     egress_rules = optional(list(object({
