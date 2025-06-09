@@ -16,6 +16,12 @@ locals {
   tags = merge({
     Name = local.name
   }, var.tags)
+
+  efs_enabled = try(
+    var.efs_id != null && var.efs_id != "" &&
+    (var.efs_name == null || try(length(var.efs_name) > 0, true)),
+    false
+  )
 }
 
 
@@ -115,6 +121,22 @@ resource "aws_ecs_task_definition" "ecs_task" {
   task_role_arn      = aws_iam_role.ecs_task_role.arn
   execution_role_arn = aws_iam_role.ecs_task_role.arn
 
+  dynamic "volume" {
+    for_each = local.efs_enabled ? [1] : []
+    content {
+      name = var.efs_name
+      efs_volume_configuration {
+        file_system_id = var.efs_id
+        root_directory = var.root_directory
+        transit_encryption = var.transit_encryption
+
+        authorization_config {
+          access_point_id = var.efs_access_point_id
+          iam             = var.iam_authorization
+        }
+      }
+    }
+  }
 
   container_definitions = jsonencode([{
     name         = "${local.name}-api-service"
@@ -147,13 +169,18 @@ resource "aws_ecs_task_definition" "ecs_task" {
         awslogs-region        = var.aws_region
       }
     }
-    # mountPoints = [
-    #   {
-    #     sourceVolume  = var.efs_name
-    #     containerPath = "/shared"
-    #     readOnly      = false
-    #   }
-    # ]
+
+
+
+    mountPoints = local.efs_enabled ? [
+      {
+        sourceVolume  = var.efs_name,
+        containerPath = var.mount_container_path
+        readOnly      = var.read_only
+      }
+    ] : []
+
+   
     ulimits = [{
       name      = "nofile"
       softLimit = 65535

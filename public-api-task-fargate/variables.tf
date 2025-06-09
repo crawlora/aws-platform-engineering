@@ -274,3 +274,73 @@ variable "ecs_service_connect_namespace_arn" {
   default = ""
   description = "if you are using service connect please specify the arn"
 }
+
+
+
+variable "efs_id" {
+  type        = string
+  description = "The ID of the EFS filesystem (required)"
+  default = ""
+}
+
+variable "efs_name" {
+  type        = string
+  default     = null
+  description = "Optional name tag for the EFS volume"
+}
+
+variable "efs_access_point_id" {
+  type        = string
+  description = "The ID of the EFS access point (required)"
+  default = ""
+}
+
+variable "mount_container_path" {
+  type        = string
+  default     = "/"
+  description = "Container path where EFS should be mounted"
+
+  validation {
+    condition     = can(regex("^/", var.mount_container_path))
+    error_message = "Mount path must start with '/'"
+  }
+}
+
+variable "root_directory" {
+  type        = string
+  default     = "/"
+  description = "Root directory path in EFS"
+
+  validation {
+    condition     = can(regex("^/", var.root_directory))
+    error_message = "Root directory must start with '/'"
+  }
+}
+
+variable "transit_encryption" {
+  type        = string
+  default     = "ENABLED"
+  description = "Whether to enable EFS transit encryption (ENABLED/DISABLED)"
+
+  validation {
+    condition     = contains(["ENABLED", "DISABLED"], var.transit_encryption)
+    error_message = "Must be either 'ENABLED' or 'DISABLED'"
+  }
+}
+
+variable "iam_authorization" {
+  type        = string
+  default     = "ENABLED"
+  description = "Whether to enable IAM authorization (ENABLED/DISABLED)"
+
+  validation {
+    condition     = contains(["ENABLED", "DISABLED"], var.iam_authorization)
+    error_message = "Must be either 'ENABLED' or 'DISABLED'"
+  }
+}
+
+variable "read_only" {
+  type        = bool
+  default     = false
+  description = "Whether the EFS mount should be read-only"
+}
