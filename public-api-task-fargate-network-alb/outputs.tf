@@ -27,3 +27,8 @@ output "target_group_arn_suffix" {
 output "lb" {
   value = aws_lb.load_balancer
 }
+
+output "task_iam_role_name" {
+  value = aws_iam_role.ecs_task_role.name
+  description = "value of the task execution role ARN"
+}
