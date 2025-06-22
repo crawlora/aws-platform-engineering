@@ -13,7 +13,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_out" {
   evaluation_periods  = 3
   metric_name         = "NewConnectionCount"
   namespace           = "AWS/ECS"
-  period              = 30 # 1 minute
+  period              = var.cloudwatch_scale_out_period # 1 minute
   statistic           = "Sum"
   threshold           = var.average_active_connections + 1
 
@@ -51,7 +51,7 @@ resource "aws_cloudwatch_metric_alarm" "scale_in" {
   evaluation_periods  = 3
   metric_name         = "NewConnectionCount"
   namespace           = "AWS/ECS"
-  period              = 20 # 1 minute
+  period              = var.cloudwatch_scale_in_period # 1 minute
   statistic           = "Sum"
   threshold           = var.average_active_connections
 

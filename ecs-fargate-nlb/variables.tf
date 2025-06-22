@@ -3,6 +3,18 @@ variable "environment" {
   description = "The environment name (e.g. dev, staging, prod)"
 }
 
+variable "cloudwatch_scale_in_period" {
+  type        = number
+  description = "The period in seconds for CloudWatch scale-in actions"
+  default     = 60
+}
+
+variable "cloudwatch_scale_out_period" {
+  type        = number
+  description = "The period in seconds for CloudWatch scale-out actions"
+  default     = 60
+}
+
 variable "exposed_port" {
   type = number
 }
