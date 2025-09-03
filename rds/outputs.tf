@@ -22,6 +22,13 @@ output "db_name" {
 output "db_instance_identifier" {
   value = aws_db_instance.rds.identifier
 }
+
+
+output "db_instance_arn" {
+  value = aws_db_instance.rds.arn
+}
+
+
 /*
 output "database_uri" {
   value = "postgresql://${aws_db_instance.rds.username}:${var.settings.db_password}@${aws_db_instance.rds.address}:${aws_db_instance.rds.port}/${aws_db_instance.rds.db_name}"
