@@ -29,6 +29,14 @@ output "db_instance_arn" {
 }
 
 
+output "db_subnate_group_id" {
+  value = aws_db_subnet_group.rds_subnet_group.id
+}
+
+output "db_subnate_group_name" {
+  value = aws_db_subnet_group.rds_subnet_group.name
+}
+
 /*
 output "database_uri" {
   value = "postgresql://${aws_db_instance.rds.username}:${var.settings.db_password}@${aws_db_instance.rds.address}:${aws_db_instance.rds.port}/${aws_db_instance.rds.db_name}"
